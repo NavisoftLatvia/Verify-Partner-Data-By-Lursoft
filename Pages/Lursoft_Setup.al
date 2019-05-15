@@ -10,8 +10,11 @@ page 50102 "Lursoft Communication Setup"
         {
             group(General)
             {
-                CaptionML = ENU = 'General';
-                field(User; User) { }
+                CaptionML = ENU = 'General', LVI = 'Visp Info.';
+                field(User; User)
+                {
+
+                }
                 field(PasswordTemp; PasswordTemp)
                 {
                     CaptionML = ENU = 'Password';
@@ -19,7 +22,6 @@ page 50102 "Lursoft Communication Setup"
                     trigger OnValidate()
                     begin
                         SetPassword(PasswordTemp);
-                        Commit;
                         CurrPage.Update;
                     end;
                 }

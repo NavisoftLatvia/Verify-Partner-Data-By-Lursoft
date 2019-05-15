@@ -1,12 +1,15 @@
 codeunit 50101 "Lursoft Communication Mgt."
 {
     trigger OnRun();
+    var
+        content: Text;
     begin
         // 'nsoft_xml', 'Navi$oft2017LS'
-        Message(StartLursoftSession());
+        content := StartLursoftSession();
+        error(content);
     end;
 
-    local procedure ErrorIfNoUserName(LursoftStp: Record "Lursoft Communication Setup")
+    local procedure ErrorifNoUserName(LursoftStp: Record "Lursoft Communication Setup")
     begin
         LursoftStp.TestField(User);
     end;
@@ -43,9 +46,8 @@ codeunit 50101 "Lursoft Communication Mgt."
 
         Arguments.SetRequestContent(RequestContent);
     end;
-    //_baseUrl := 'https://www.lursoft.lv/server3?act=LOGINXML&Userid=' + _userID + '&Password=' + _password + '&utf=1';
-    local procedure StartLursoftSession() SessionKey: Text;
 
+    local procedure StartLursoftSession() SessionKey: Text;
     var
         Arguments: Record "REST Web Service Arguments";
         LursoftCommunicationSetup: Record "Lursoft Communication Setup";
@@ -57,16 +59,14 @@ codeunit 50101 "Lursoft Communication Mgt."
         _xlmElement: XmlElement;
         _xmlDoc: XmlDocument;
         _xmlProcessor: XmlNamespaceManager;
+        _xmlBuffer: Record "XML Buffer";
         data: Text;
-        info: Text;
         MessageText: Text;
         password: Text;
         ResponseText: Text;
-        ct: Integer;
-        curr: Integer;
     begin
         LursoftCommunicationSetup.Get();
-        ErrorIfNoUserName(LursoftCommunicationSetup);
+        ErrorifNoUserName(LursoftCommunicationSetup);
         ErrorINoPassword(LursoftCommunicationSetup);
         password := LursoftCommunicationSetup.GetPassword();
 
@@ -74,36 +74,88 @@ codeunit 50101 "Lursoft Communication Mgt."
                 TypeHelper.UrlEncode(LursoftCommunicationSetup.User),
                 TypeHelper.UrlEncode(password)
                 );
+
         InitArguments(Arguments, data, LursoftCommunicationSetup);
         if not CallWebService(Arguments) then
             exit;
 
         ResponseText := TestAndSaveResult(Arguments);
-        MESSAGE(ResponseText);
-
         if not XmlDocument.ReadFrom(ResponseText, _xmlDoc) then
             error('Text is not valid XML!');
 
         _xmlDoc.GetChildNodes().Get(1, _xmlNode);
 
-        ResponseText := _xmlNode.AsXmlElement.NamespaceUri;
-
         _xmlProcessor.NameTable(_xmlDoc.NameTable());
-        _xmlProcessor.AddNamespace('', _xmlNode.AsXmlElement.NamespaceUri);
-        //_xmlDoc.NameTable.Get('SessionId', info);
+        _xmlProcessor.AddNamespace('soap', 'http://www.w3.org/2001/09/soap-envelope');
+        _xmlProcessor.AddNamespace('Lursoft', 'x-schema:/schemas/lursoft_header.xsd');
 
-        _xmlDoc.SelectNodes('Lursoft:SessionId', _xmlProcessor, _xmlNodeList);
-        /*
-        ct := _xmlNodeList.Count();
+        _xmlDoc.GetRoot(_xlmElement);
+        _xlmElement.SelectSingleNode('//soap:Envelope/soap:Header/Lursoft:SessionId', _xmlProcessor, _xmlNode);
+        SessionKey := _xmlNode.AsXmlElement.InnerText;
 
-        repeat
-          info += _xmlNode.AsXmlElement.InnerText;
-          curr += 1;
-        until curr = ct; 
-        */
+        exit(SessionKey);
+    end;
 
-        Message(info);
-        exit(ResponseText);
+    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterValidateEvent', 'Registration No.', true, true)]
+    local procedure OnAfterValidateCustomerRegNo(var Rec: Record Customer; var xRec: Record Customer; CurrFieldNo: Integer);
+    begin
+        if Rec.ISTEMPORARY then
+            exit;
 
+        if Rec."Registration No." = '' then
+            exit;
+
+        if Rec."Registration No." = xRec."Registration No." then
+            exit;
+
+        CustomerGetDataFromLursoft(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterValidateEvent', 'Registration No.', true, true)]
+    local procedure OnAfterValidateVendorRegNo(var Rec: Record Vendor; var xRec: Record Vendor; CurrFieldNo: Integer);
+    begin
+        if Rec.ISTEMPORARY then
+            exit;
+
+        if Rec."Registration No." = '' then
+            exit;
+
+        if Rec."Registration No." = xRec."Registration No." then
+            exit;
+
+        VendorGetDataFromLursoft(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::Contact, 'OnAfterValidateEvent', 'Registration No.', true, true)]
+    local procedure OnAfterValidateContactRegNo(var Rec: Record Contact; var xRec: Record Contact; CurrFieldNo: Integer);
+    begin
+        if Rec.ISTEMPORARY then
+            exit;
+
+        if Rec."Registration No." = '' then
+            exit;
+
+        if Rec."Registration No." = xRec."Registration No." then
+            exit;
+
+        ContactGetDataFromLursoft(Rec);
+    end;
+    local procedure CustomerGetDataFromLursoft(var Rec: Record Customer)
+    var
+        myInt: Integer;
+    begin
+        
+    end;
+    local procedure VendorGetDataFromLursoft(var Rec: Record Vendor)
+    var
+        myInt: Integer;
+    begin
+        
+    end;
+    local procedure ContactGetDataFromLursoft(var Rec: Record Contact)
+    var
+        myInt: Integer;
+    begin
+        
     end;
 }

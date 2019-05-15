@@ -1,25 +1,27 @@
 table 50102 "Lursoft Communication Setup"
 {
-    CaptionML = ENU = 'Lursoft Communication Setup', LVI = 'Lursoft komunikācijas uzstādījumi';
-
+    CaptionML = ENU = 'Lursoft Communication Setup',
+                LVI = 'Lursoft komunikācijas uzstādījumi';
     fields
     {
         field(1; PrimaryKey; Code[10])
         {
-            CaptionML = ENU = 'Primary Key', LVI = 'Primārā atslēga';
+            CaptionML = ENU = 'Primary Key',
+                        LVI = 'Primārā atslēga';
 
         }
         field(2; User; text[250])
         {
-            CaptionML = ENU = 'User Name', LVI = 'Lietotājvārds';
+            CaptionML = ENU = 'User Name',
+                        LVI = 'Lietotājvārds';
         }
         field(3; Password; Guid)
         {
-            CaptionML = ENU = 'Password', LVI = 'Parole';
+            CaptionML = ENU = 'Password',
+                        LVI = 'Parole';
             Editable = false;
         }
     }
-
     keys
     {
         key(PK; PrimaryKey)
@@ -27,7 +29,6 @@ table 50102 "Lursoft Communication Setup"
             Clustered = true;
         }
     }
-
     procedure SetPassword(Value: Text)
     var
         ServicePassword: Record "Service Password";
