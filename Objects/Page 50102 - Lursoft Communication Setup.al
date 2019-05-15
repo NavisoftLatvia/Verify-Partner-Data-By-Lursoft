@@ -1,4 +1,4 @@
-page 50102 "Lursoft Communication Setup"
+page 50100 "Lursoft Communication Setup"
 {
     PageType = Card;
     SourceTable = "Lursoft Communication Setup";

@@ -1,4 +1,4 @@
-table 50102 "Lursoft Communication Setup"
+table 50101 "Lursoft Communication Setup"
 {
     CaptionML = ENU = 'Lursoft Communication Setup',
                 LVI = 'Lursoft komunikācijas uzstādījumi';

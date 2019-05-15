@@ -6,7 +6,7 @@ codeunit 50101 "Lursoft Communication Mgt."
     begin
         // 'nsoft_xml', 'Navi$oft2017LS'
         content := StartLursoftSession();
-        error(content);
+        //error(content);
     end;
 
     local procedure ErrorifNoUserName(LursoftStp: Record "Lursoft Communication Setup")
@@ -47,6 +47,18 @@ codeunit 50101 "Lursoft Communication Mgt."
         Arguments.SetRequestContent(RequestContent);
     end;
 
+    [TryFunction]
+    local procedure GetLoginInfo(var userName: Text; var Password: Text)
+    var
+        LursoftCommunicationSetup: Record "Lursoft Communication Setup";
+    begin
+        LursoftCommunicationSetup.Get();
+        ErrorifNoUserName(LursoftCommunicationSetup);
+        ErrorINoPassword(LursoftCommunicationSetup);
+        userName := LursoftCommunicationSetup.User;
+        password := LursoftCommunicationSetup.GetPassword();
+    end;
+
     local procedure StartLursoftSession() SessionKey: Text;
     var
         Arguments: Record "REST Web Service Arguments";
@@ -62,16 +74,15 @@ codeunit 50101 "Lursoft Communication Mgt."
         _xmlBuffer: Record "XML Buffer";
         data: Text;
         MessageText: Text;
+        userName: Text;
         password: Text;
         ResponseText: Text;
     begin
-        LursoftCommunicationSetup.Get();
-        ErrorifNoUserName(LursoftCommunicationSetup);
-        ErrorINoPassword(LursoftCommunicationSetup);
-        password := LursoftCommunicationSetup.GetPassword();
+        if not GetLoginInfo(userName, password) then
+            error(GetLastErrorText);
 
         data := StrSubstNo('act=LOGINXML&Userid=%1&Password=%2&utf=1',
-                TypeHelper.UrlEncode(LursoftCommunicationSetup.User),
+                TypeHelper.UrlEncode(userName),
                 TypeHelper.UrlEncode(password)
                 );
 
@@ -140,22 +151,25 @@ codeunit 50101 "Lursoft Communication Mgt."
 
         ContactGetDataFromLursoft(Rec);
     end;
+
     local procedure CustomerGetDataFromLursoft(var Rec: Record Customer)
     var
         myInt: Integer;
     begin
-        
+
     end;
+
     local procedure VendorGetDataFromLursoft(var Rec: Record Vendor)
     var
         myInt: Integer;
     begin
-        
+
     end;
+
     local procedure ContactGetDataFromLursoft(var Rec: Record Contact)
     var
         myInt: Integer;
     begin
-        
+
     end;
 }

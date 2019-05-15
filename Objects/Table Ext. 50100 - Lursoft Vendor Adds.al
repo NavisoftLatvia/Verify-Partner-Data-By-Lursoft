@@ -1,4 +1,4 @@
-tableextension 50100 "Lursoft Contact Adds" extends Contact
+tableextension 50100 "Lursoft Vendor Adds" extends Vendor
 {
     fields
     {
