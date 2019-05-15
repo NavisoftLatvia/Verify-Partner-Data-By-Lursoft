@@ -1,4 +1,4 @@
-pageextension 50100 "Lursoft Customer List Adds" extends "Customer List"
+pageextension 50102 "Lursoft Customer List Adds" extends "Customer List"
 {
     layout
     {
@@ -16,7 +16,7 @@ pageextension 50100 "Lursoft Customer List Adds" extends "Customer List"
     }
     actions
     {
-        addafter(Service)
+        addafter(History)
         {
             group("Lursoft")
             {

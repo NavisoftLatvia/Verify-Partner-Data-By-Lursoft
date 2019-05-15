@@ -1,4 +1,4 @@
-pageextension 50101 "Lursoft Customer Card Adds" extends "Customer Card"
+pageextension 50103 "Lursoft Customer Card Adds" extends "Customer Card"
 {
     layout
     {
